@@ -32,6 +32,7 @@
     "@storybook/testing-library": "^0.2.0",
     "@storybook/vue3": "^7.5.0-alpha.1",
     "@storybook/vue3-vite": "^7.5.0-alpha.1",
+    "@tauri-apps/cli": "^1.5.9",
     "@types/marked": "^6.0.0",
     "@types/node": "^20",
     "@typescript-eslint/parser": "^5.59.2",

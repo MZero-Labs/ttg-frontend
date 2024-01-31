@@ -164,3 +164,16 @@ yarn preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+
+## Desktop App
+The app is wrapped using tauri.app
+
+### 1. install rust
+https://tauri.app/v1/guides/getting-started/prerequisites/#managing-the-rust-installation
+
+### 2. `yarn install`
+
+### 3. `yarn tauri dev` - for yarn dev
+
+### 4. `yarn tauri build` - for yarn build
