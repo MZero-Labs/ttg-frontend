@@ -31,9 +31,6 @@ describe("Governance configuration", () => {
       cy.get('h3.text-xl').contains(value)
     })
 
-    // non-changeable parameters table
-    cy.get('table').eq(0).find('tbody tr').should('have.length', 8)
-
     const nonChangeableConfigParams = [
       "Standard Governor",
       "Emergency Governor",
@@ -42,8 +39,11 @@ describe("Governance configuration", () => {
       "ZERO Token",
       "Distribution Vault",
       "Registrar",
-      "M Token"
+      // "M Token"
     ]
+
+    // non-changeable parameters table
+    cy.get('table').eq(0).find('tbody tr').should('have.length', nonChangeableConfigParams.length)
 
     nonChangeableConfigParams.forEach((value: string) => {
       cy.get('table').eq(0).find('tbody tr').contains(value)

@@ -18,15 +18,23 @@ describe("Check proposal form validation", () => {
           .should("be.visible")
           .click();
 
+        // open dropdown
         cy.get("[data-test='listSelect']")
-          .find("[data-test='list_minters']")
-          .should("have.length", 1);
-        cy.get("[data-test='listSelect']")
-          .find("[data-test='list_validators']")
-          .should("have.length", 1);
-        cy.get("[data-test='listSelect']")
-          .find("[data-test='list_earners']")
-          .should("have.length", 1);
+          .find("button")
+          .should("have.length", 1)
+          .click();
+
+        cy.get("[data-test='list_minters']")
+          .should("have.length", 1)
+          .and('contain', 'Minters');
+
+        cy.get("[data-test='list_validators']")
+          .should("have.length", 1)
+          .and('contain', 'Validators');
+
+        cy.get("[data-test='list_earners']")
+          .should("have.length", 1)
+          .and('contain', 'Earners');
 
         // click submit before filling out form, expect require errors
         cy.get("[data-test='create-proposal-button-preview']")
@@ -77,7 +85,6 @@ describe("Check proposal form validation", () => {
         cy.get("[data-test='create-proposal-button-preview']")
           .should("be.visible")
           .click();
-   
       });
     });
   });
@@ -88,11 +95,14 @@ describe("Check proposal form validation", () => {
       .should("be.visible")
       .click();
 
+    // open dropdown
     cy.get("[data-test='protocolConfigSelect']").as("configDropdown").click();
-    cy.get("@configDropdown")
-      .find("ul li")
-      .as("dropdownOptions")
-      .should("have.length", 14);
+
+    const configHeadlines = [
+      "Protocol",
+      "Mint",
+      "Interest rates",
+    ];
 
     const configOptions = [
       "Update collateral interval",
@@ -102,9 +112,15 @@ describe("Check proposal form validation", () => {
       "Mint TTL",
       "Mint ratio",
       "Minter freeze time",
-      "Minter rate",
-      "Earner rate",
+      "Minter rate model",
+      "Base minter rate",
+      "Earner rate model",
+      "Max earner rate",
     ];
+
+    cy.get('ul.dropdown-menu-items').should("be.visible");
+    cy.get('ul.dropdown-menu-items li').as("dropdownOptions")
+      .should("have.length", configHeadlines.length + configOptions.length);
 
     configOptions.forEach((option) => {
       const buttonRegex = new RegExp(`^${option}`, "i");

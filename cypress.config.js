@@ -15,7 +15,7 @@ export default defineConfig({
       return config;
     },
   },
-  defaultCommandTimeout: 120000,
+  defaultCommandTimeout: 15000,
   video: false,
   viewportWidth: 1280,
   viewportHeight: 1024,
