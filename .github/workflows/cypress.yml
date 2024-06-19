@@ -108,19 +108,31 @@ jobs:
             /app/entrypoint.sh > $LOG_FILE 2>&1 &
             MAIN_JOB_PID=$!
 
-            # Monitor the log file in real-time
-            (tail -f $LOG_FILE &) | while read LINE; do
-            echo "$LINE"
-            if [[ "$LINE" == *"ECONNRESET"* ]]; then
-            echo "Found ECONNRESET, terminating the job."
-            kill $MAIN_JOB_PID
-            exit 1
-            fi
-            done
+            # Monitor the log file in real-time and display logs
+            (tail -f $LOG_FILE &)
 
-            # Wait for the main job to finish
+            # Function to monitor the log file for specific text and terminate the main job if found
+            monitor_log() {
+              while IFS= read -r LINE; do
+                echo "$LINE"
+                if [[ "$LINE" == *"ECONNRESET"* ]]; then
+                  echo "Found ECONNRESET in log, terminating the job."
+                  kill $MAIN_JOB_PID
+                exit 1
+                fi
+              done < $LOG_FILE
+            }
+
+            # Run the log monitor function in the background
+            monitor_log &
+            MONITOR_PID=$!
+
+            # Wait for the main job to finish and capture its exit code
             wait $MAIN_JOB_PID
             MAIN_JOB_EXIT_CODE=$?
+
+            # Terminate the log monitor process
+            kill $MONITOR_PID
 
             # Exit with the main job's exit code
             exit $MAIN_JOB_EXIT_CODE
