@@ -3,12 +3,12 @@ on:
   push:
     branches:
       - main
+      - tests/**
   pull_request:
-    types: [opened]
+    types: [ opened ]
   schedule:
     - cron: "0 8 * * *" # Run every day at 8am UTC
   workflow_dispatch:
-    
 
 env:
   DOCKER_REGISTRY: ghcr.io
@@ -98,4 +98,63 @@ jobs:
         with:
           image: "${{ env.DOCKER_REGISTRY }}/mzero-labs/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_VERSION }}"
           options: --env TEST_RUN=${{ matrix.test_runs }}
-          run: "/app/entrypoint.sh"
+          shell: bash
+          # run: "/app/entrypoint.sh"
+          run: |
+            # Define the log file
+            LOG_FILE=job_output.txt
+
+            # Start the main job in the background and redirect its output to the log file
+            /app/entrypoint.sh > $LOG_FILE 2>&1 &
+            MAIN_JOB_PID=$!
+
+            # Monitor the log file in real-time and display logs
+            (tail -f $LOG_FILE &)
+
+            # Function to monitor the log file for specific text and terminate the main job if found
+            monitor_log() {
+              while IFS= read -r LINE; do
+                echo "$LINE"
+                if [[ "$LINE" == *"Error: read ECONNRESET"* ]]; then
+                  echo "Found 'Error: read ECONNRESET' in log, terminating the job."
+                  if ps -p $MAIN_JOB_PID > /dev/null; then
+                    kill $MAIN_JOB_PID
+                  else
+                    echo "Main job process $MAIN_JOB_PID already terminated."
+                  fi
+                  exit 255
+                fi
+              done < $LOG_FILE
+            }
+
+            # Run the log monitor function in the background
+            monitor_log &
+            MONITOR_PID=$!
+
+            # Wait for the main job to finish and capture its exit code
+            wait $MAIN_JOB_PID
+            MAIN_JOB_EXIT_CODE=$?
+
+            # Terminate the log monitor process
+            if ps -p $MONITOR_PID > /dev/null; then
+              kill $MONITOR_PID
+            else
+              echo "Main job process $MONITOR_PID already terminated."
+            fi
+
+            echo "************************************************************"
+            echo "*****            Repeat the full log file              *****"
+            echo "************************************************************"
+            echo ""
+            
+            cat $LOG_FILE
+            
+            # Display the main job's exit code
+            echo "Main job finished with exit code $MAIN_JOB_EXIT_CODE."
+            
+            if [ $MAIN_JOB_EXIT_CODE -eq 255 ]; then
+              echo "Found ECONNRESET and exited error code $MAIN_JOB_EXIT_CODE."
+            fi
+            
+            # Exit with the main job's exit code
+            exit $MAIN_JOB_EXIT_CODE

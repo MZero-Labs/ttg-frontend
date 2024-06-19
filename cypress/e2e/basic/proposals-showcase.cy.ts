@@ -10,10 +10,12 @@ describe("Proposals", () => {
     const titleExecutable = "Executable proposal";
     const description = "test proposal description";
 
-    it("CREATE Standard proposal add to list", () => {
+    beforeEach(() => {
       cy.visit("/proposal/create");
       cy.connectWallet();
+    })
 
+    it("CREATE Standard proposal add to list", () => {
       cy.get("[data-test='proposalTypeSelect']").should("exist").click();
 
       cy.get("[data-test='addToList']").click();
@@ -29,8 +31,9 @@ describe("Proposals", () => {
 
       cy.clickPreviewProposal();
 
-      cy.contains("Submit proposal").should("exist");
-      cy.contains("Submit proposal").then(($el) => {
+      cy.getButton('Submit').as('submitButton').should('be.visible');
+
+      cy.get('@submitButton').then(($el) => {
         cy.wrap($el).click();
         cy.get(".complete").invoke("text").should("contain", "Confirmation");
       });
@@ -39,16 +42,11 @@ describe("Proposals", () => {
     it("MINE Epochs", () => {
       // forward in time to be able to vote
       cy.mineEpochs(2);
-
       cy.wait(500);
     });
 
     it("CREATE Zero proposal reset", () => {
       // zero proposals cant be created on first epoch
-
-      cy.visit("/proposal/create");
-      cy.connectWallet();
-
       cy.get("[data-test='proposalTypeSelect']").should("exist").click();
 
       cy.get("[data-test='menuReset']").click();
@@ -61,17 +59,15 @@ describe("Proposals", () => {
 
       cy.clickPreviewProposal();
 
-      cy.contains("Submit proposal").should("exist");
-      cy.contains("Submit proposal").then(($el) => {
+      cy.getButton('Submit').as('submitButton').should('be.visible');
+
+      cy.get('@submitButton').then(($el) => {
         cy.wrap($el).click();
         cy.get(".complete").invoke("text").should("contain", "Confirmation");
       });
     });
 
     it("CREATE Standard proposal to show in pending proposals", () => {
-      cy.visit("/proposal/create");
-      cy.connectWallet();
-
       cy.get("[data-test='proposalTypeSelect']").should("exist").click();
 
       cy.get("[data-test='addToList']").click();
@@ -87,17 +83,15 @@ describe("Proposals", () => {
 
       cy.clickPreviewProposal();
 
-      cy.contains("Submit proposal").should("exist");
-      cy.contains("Submit proposal").then(($el) => {
+      cy.getButton('Submit').as('submitButton').should('be.visible');
+
+      cy.get('@submitButton').then(($el) => {
         cy.wrap($el).click();
         cy.get(".complete").invoke("text").should("contain", "Confirmation");
       });
     });
 
     it("CREATE Emergency proposal add to list", () => {
-      cy.visit("/proposal/create");
-      cy.connectWallet();
-
       cy.get("[data-test='proposalTypeSelect']").should("exist").click();
 
       cy.get("[data-test='menuEmergency']").click();
@@ -112,8 +106,9 @@ describe("Proposals", () => {
 
       cy.clickPreviewProposal();
 
-      cy.contains("Submit proposal").should("exist");
-      cy.contains("Submit proposal").then(($el) => {
+      cy.getButton('Submit').as('submitButton').should('be.visible');
+
+      cy.get('@submitButton').then(($el) => {
         cy.wrap($el).click();
         cy.get(".complete").invoke("text").should("contain", "Confirmation");
       });
@@ -124,9 +119,6 @@ describe("Proposals", () => {
     });
 
     it("CREATE Emergency proposal add to list", () => {
-      cy.visit("/proposal/create");
-      cy.connectWallet();
-
       cy.get("[data-test='proposalTypeSelect']").should("exist").click();
 
       cy.get("[data-test='menuEmergency']").click();
@@ -141,8 +133,9 @@ describe("Proposals", () => {
 
       cy.clickPreviewProposal();
 
-      cy.contains("Submit proposal").should("exist");
-      cy.contains("Submit proposal").then(($el) => {
+      cy.getButton('Submit').as('submitButton').should('be.visible');
+
+      cy.get('@submitButton').then(($el) => {
         cy.wrap($el).click();
         cy.get(".complete").invoke("text").should("contain", "Confirmation");
       });
