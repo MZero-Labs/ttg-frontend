@@ -18,4 +18,4 @@ fi
 echo "TEST_RUN: $TEST_RUN - SPECS_STRING: $SPECS_STRING"
 
 # start cypress
-DEBUG=cypress:server cypress run --e2e --spec "${SPECS_STRING}"
+cypress run --e2e --spec "${SPECS_STRING}"
