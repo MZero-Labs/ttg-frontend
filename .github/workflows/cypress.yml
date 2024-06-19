@@ -115,14 +115,14 @@ jobs:
             monitor_log() {
               while IFS= read -r LINE; do
                 echo "$LINE"
-                if [[ "$LINE" == *"ECONNRESET"* ]]; then
-                  echo "Found ECONNRESET in log, terminating the job."
+                if [[ "$LINE" == *"Error: read ECONNRESET"* ]]; then
+                  echo "Found 'Error: read ECONNRESET' in log, terminating the job."
                   if ps -p $MAIN_JOB_PID > /dev/null; then
                     kill $MAIN_JOB_PID
                   else
                     echo "Main job process $MAIN_JOB_PID already terminated."
                   fi
-                exit 1
+                  exit 255
                 fi
               done < $LOG_FILE
             }
@@ -152,9 +152,9 @@ jobs:
             # Display the main job's exit code
             echo "Main job finished with exit code $MAIN_JOB_EXIT_CODE."
             
+            if [ $MAIN_JOB_EXIT_CODE -eq 255 ]; then
+              echo "Found ECONNRESET and exited error code $MAIN_JOB_EXIT_CODE."
+            fi
+            
             # Exit with the main job's exit code
             exit $MAIN_JOB_EXIT_CODE
-
-      - name: Check job status
-        if: failure()
-        run: echo "The job was terminated due to finding specific text in the log."
