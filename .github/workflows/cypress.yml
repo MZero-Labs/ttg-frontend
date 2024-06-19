@@ -136,8 +136,14 @@ jobs:
             MAIN_JOB_EXIT_CODE=$?
 
             # Terminate the log monitor process
-            kill $MONITOR_PID
+            if ps -p $MONITOR_PID > /dev/null; then
+              kill $MONITOR_PID
+            else
+              echo "Main job process $MONITOR_PID already terminated."
+            fi
 
+            echo "Main job finished with exit code $MAIN_JOB_EXIT_CODE."
+            
             # Exit with the main job's exit code
             exit $MAIN_JOB_EXIT_CODE
 
