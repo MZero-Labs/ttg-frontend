@@ -98,4 +98,31 @@ jobs:
         with:
           image: "${{ env.DOCKER_REGISTRY }}/mzero-labs/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_VERSION }}"
           options: --env TEST_RUN=${{ matrix.test_runs }}
-          run: "/app/entrypoint.sh"
+          # run: "/app/entrypoint.sh"
+          run: |
+            # Define the log file
+            LOG_FILE=job_output.txt
+
+            # Start the main job in the background and redirect its output to the log file
+            /app/entrypoint.sh > $LOG_FILE 2>&1 &
+            MAIN_JOB_PID=$!
+
+            # Monitor the log file in real-time
+            tail -f $LOG_FILE | while read LINE; do
+            if [[ "$LINE" == *"read ECONNRESET"* ]]; then
+            echo "Found ECONNRESET, terminating the job."
+            kill $MAIN_JOB_PID
+            exit 1
+            fi
+            done
+
+            # Wait for the main job to finish
+            wait $MAIN_JOB_PID
+            MAIN_JOB_EXIT_CODE=$?
+
+            # Exit with the main job's exit code
+            exit $MAIN_JOB_EXIT_CODE
+
+      - name: Check job status
+        if: failure()
+        run: echo "The job was terminated due to finding specific text in the log."
