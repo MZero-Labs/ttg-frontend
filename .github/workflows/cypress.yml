@@ -109,8 +109,9 @@ jobs:
             MAIN_JOB_PID=$!
 
             # Monitor the log file in real-time
-            tail -f $LOG_FILE | while read LINE; do
-            if [[ "$LINE" == *"read ECONNRESET"* ]]; then
+            (tail -f $LOG_FILE &) | while read LINE; do
+            echo "$LINE"
+            if [[ "$LINE" == *"ECONNRESET"* ]]; then
             echo "Found ECONNRESET, terminating the job."
             kill $MAIN_JOB_PID
             exit 1
