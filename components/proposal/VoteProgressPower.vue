@@ -6,7 +6,7 @@
       {{ props.votes?.yes?.percentage }}%
     </span>
 
-    <span id="vote-yes-percentage" class="text-grey-400 text-xs">
+    <span id="vote-yes-percentage" class="text-grey-500 text-xs">
       ({{ props.votes?.yes?.formatted }})
     </span>
 
@@ -32,12 +32,12 @@
       {{ props.votes?.no?.percentage }}%
     </span>
 
-    <span id="vote-yes-percentage" class="text-grey-400 text-xs">
+    <span id="vote-yes-percentage" class="text-grey-500 text-xs">
       ({{ props.votes?.no?.formatted }})
     </span>
 
     <div v-if="props.thresholdRatio">
-      <span class="text-grey-400 text-xs uppercase whitespace-nowrap">
+      <span class="text-grey-500 text-xs uppercase whitespace-nowrap">
         Threshold: {{ thresholdRatio }}% ({{ props.thresholdFormatted }})
       </span>
     </div>

@@ -22,6 +22,10 @@
           :threshold-formatted="thresholdFormatted"
         />
       </div>
+      <p class="my-1 text-sm text-grey-500">
+        Total participation:
+        {{ getParticipationPercentage }}%
+      </p>
     </div>
   </div>
 </template>
@@ -177,6 +181,13 @@ const thresholdRatio = computed(() =>
     ? powerThresholdRatio.value
     : zeroThresholdRatio.value,
 );
+
+const getParticipationPercentage = computed(() => {
+  return percentageSafeDiv(
+    props.yesVotes + props.noVotes,
+    props.version === "Zero" ? props.zeroTotalSupply : props.powerTotalSupply,
+  );
+});
 </script>
 <style scoped>
 .text-yes {

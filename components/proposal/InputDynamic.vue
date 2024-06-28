@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="props.description"
-    class="bg-accent-teal flex flex-col gap-1 p-4 my-2"
+    class="bg-grey-800 bg-opacity-85 flex flex-col gap-1 p-4 my-2"
   >
     <span class="uppercase text-xxs">Parameter description</span>
     <p class="font-inter">

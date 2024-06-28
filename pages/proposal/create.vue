@@ -21,8 +21,8 @@
             <span>Define the action to be executed if proposal succeeds</span>
           </div>
 
-          <div class="mb-4">
-            <label for="proposal-type">Proposal type</label>
+          <div class="mb-1">
+            <label for="proposal-type">Action *</label>
             <MInputMultiSelect
               :options="proposalTypes"
               data-test="proposalTypeSelect"
@@ -30,62 +30,10 @@
             />
           </div>
 
-          <div class="my-3">
-            <div>
-              <div
-                v-if="selectedProposalType?.votingType === 'Standard'"
-                class="p-4 bg-accent-teal"
-              >
-                <div class="mb-2">
-                  <p class="uppercase text-xxs">Standard Proposal</p>
-                </div>
-
-                <div class="flex gap-4">
-                  <MIconPower class="min-w-[24px] h-[24px]" />
-                  <div>
-                    <span class="font-inter text-grey-100">
-                      Only holders who possess active
-                      <u>{{ MVotingTokens.Power }} tokens</u> will be eligible
-                      to participate in voting for or against the selected
-                      proposal type.
-                    </span>
-                  </div>
-                </div>
-
-                <div
-                  v-if="selectedProposalType?.hasToPayFee"
-                  class="flex gap-4 mt-3"
-                >
-                  <img src="/img/vote.svg" class="w-[24px] h-[24px]" alt="" />
-                  <div>
-                    <span class="font-inter text-grey-100"
-                      >Simple majority wins</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <div
-                v-if="selectedProposalType?.votingType === 'Zero'"
-                class="p-4 bg-accent-teal"
-              >
-                <div class="mb-2">
-                  <p class="uppercase text-xxs">Standard Proposal</p>
-                </div>
-                <div class="flex gap-4">
-                  <MIconZero class="min-w-[24px] h-[24px]" />
-                  <div>
-                    <span class="font-inter text-grey-100">
-                      Only holders who possess active
-                      <u>{{ MVotingTokens.Zero }} tokens</u> will be eligible to
-                      participate in voting for or against the selected proposal
-                      type.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ProposalCreateActionDescription
+            v-if="selectedProposalType"
+            :selected-proposal-type="selectedProposalType"
+          />
 
           <div :class="{ disabled: selectedProposalType === undefined }">
             <div v-show="formData.proposalType">
@@ -110,7 +58,7 @@
             </div>
 
             <div class="mb-6">
-              <label for="title-input">Title*</label>
+              <label for="title-input">Title *</label>
               <MInput
                 id="title-input"
                 v-model="formData.title"
@@ -124,7 +72,7 @@
 
             <div class="mb-6" data-test="description">
               <div class="flex justify-between mb-2">
-                <label for="description">Description*</label>
+                <label for="description">Description *</label>
                 <div
                   class="text-sm text-grey-600 flex items-center gap-1 font-inter"
                 >
@@ -265,7 +213,6 @@ import { useVuelidate } from "@vuelidate/core";
 import { storeToRefs } from "pinia";
 
 /* custom libs */
-import { MVotingTokens } from "@/lib/api";
 import {
   stringToHexWith32Bytes,
   addressToHexWith32Bytes,
@@ -491,7 +438,7 @@ const proposalTypes = [
 
   {
     value: "setProposalFee",
-    label: "Proposal fee",
+    label: "Update proposal fee",
     component: InputGovernanceSetProposalFee,
     votingType: "Standard",
     governor: ttg.contracts.standardGovernor,
@@ -501,7 +448,7 @@ const proposalTypes = [
 
   {
     value: "setCashToken",
-    label: "Cash token",
+    label: "Change cash token",
     component: InputGovernanceSetCashToken,
     votingType: "Zero",
     governor: ttg.contracts.zeroGovernor,
@@ -511,7 +458,7 @@ const proposalTypes = [
 
   {
     value: "setEmergencyProposalThresholdRatio",
-    label: "Power threshold",
+    label: "Update power threshold",
     component: InputGovernanceSetEmergencyProposalThreshold,
     modelValue: formData.proposalValue,
     votingType: "Zero",
@@ -521,7 +468,7 @@ const proposalTypes = [
   },
   {
     value: "setZeroProposalThresholdRatio",
-    label: "Zero threshold",
+    label: "Update zero threshold",
     component: InputGovernanceSetZeroProposalThreshold,
     votingType: "Zero",
     governor: ttg.contracts.zeroGovernor,
@@ -573,7 +520,7 @@ const proposalTypes = [
       },
       {
         value: "setStandardProposalFee",
-        label: "Proposal fee",
+        label: "Update proposal fee",
         isEmergency: true,
         component: InputGovernanceSetProposalFee,
         votingType: "Emergency",
